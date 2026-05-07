@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 关键：适配手机屏幕 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>吉他指板音阶训练</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
+        body {
+            background: #1a1a1a;
+            color: white;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #ffcc00;
+        }
+
+        .question {
+            background: #333;
+            padding: 30px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .tip {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        /* 音名按钮 */
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .note-btn {
+            padding: 15px 5px;
+            font-size: 18px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .note-btn:active {
+            background: #666;
+            transform: scale(0.95);
+        }
+
+        /* 结果提示 */
+        .result {
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .correct {
+            background: #2ecc71;
+        }
+
+        .wrong {
+            background: #e74c3c;
+        }
+
+        /* 下一题按钮 */
+        #next {
+            width: 100%;
+            padding: 18px;
+            font-size: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">🎸 吉他指板音阶训练</div>
+    <div class="tip">标准调音：6=E 5=A 4=D 3=G 2=B 1=E</div>
+
+    <!-- 题目 -->
+    <div class="question" id="question">加载中...</div>
+
+    <!-- 结果 -->
+    <div class="result" id="result"></div>
+
+    <!-- 音名按钮 -->
+    <div class="notes">
+        <button class="note-btn">C</button>
+        <button class="note-btn">C#</button>
+        <button class="note-btn">D</button>
+        <button class="note-btn">D#</button>
+        <button class="note-btn">E</button>
+        <button class="note-btn">F</button>
+        <button class="note-btn">F#</button>
+        <button class="note-btn">G</button>
+        <button class="note-btn">G#</button>
+        <button class="note-btn">A</button>
+        <button class="note-btn">A#</button>
+        <button class="note-btn">B</button>
+    </div>
+
+    <!-- 下一题 -->
+    <button id="next">下一题 →</button>
+
+    <script>
+        // 吉他标准调音 6弦~1弦
+        const openStrings = {
+            6: 'E',
+            5: 'A',
+            4: 'D',
+            3: 'G',
+            2: 'B',
+            1: 'E'
+        }
+
+        // 12平均律
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+        let currentString, currentFret, correctNote
+
+        // 生成新题目
+        function newQuestion() {
+            currentString = Math.floor(Math.random() * 6) + 1
+            currentFret = Math.floor(Math.random() * 13) // 0-12品
+            correctNote = getNote(currentString, currentFret)
+            
+            document.getElementById('question').innerText = `${currentString}弦 ${currentFret}品`
+            document.getElementById('result').innerText = ''
+            document.getElementById('result').className = 'result'
+        }
+
+        // 计算音名
+        function getNote(string, fret) {
+            const open = openStrings[string]
+            const idx = notes.indexOf(open)
+            const target = (idx + fret) % 12
+            return notes[target]
+        }
+
+        // 绑定答题按钮
+        const btns = document.querySelectorAll('.note-btn')
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const user = btn.innerText
+                const res = document.getElementById('result')
+
+                if (user === correctNote) {
+                    res.innerText = '✅ 正确！'
+                    res.className = 'result correct'
+                } else {
+                    res.innerText = `❌ 错误，答案：${correctNote}`
+                    res.className = 'result wrong'
+                }
+            })
+        })
+
+        // 下一题
+        document.getElementById('next').addEventListener('click', newQuestion)
+
+        // 初始加载
+        newQuestion()
+    </script>
+</body>
+</html>
